@@ -5,6 +5,8 @@ import pygame # type: ignore
 from constants import *
 from player import *
 from circleshape import *
+from asteroid import *
+from asteroidfield import *
 
 def main():
 
@@ -18,9 +20,18 @@ def main():
     #creating a game clock for FPS and tick updates
     clock = pygame.time.Clock()
     dt = 0
-    # setting up the player
+    #creating groups to place objects within
+    updateable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
+    #making those groups containers for the classes
+    Player.containers = (updateable, drawable)
+    Asteroid.containers = (asteroids, updateable, drawable)
+    AsteroidField.containers = (updateable,)
+    #setting up the player
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-
+    #setting up the asteroid field
+    asteroid_field = AsteroidField()
     #setting up an infinite loop for game updates
     while True:
             for event in pygame.event.get():
@@ -28,8 +39,9 @@ def main():
                     return
 
             screen.fill("black")
-            player.draw(screen)
-            player.update(dt)
+            for d in drawable:
+                d.draw(screen)
+            updateable.update(dt)
             pygame.display.flip()
 
             # limit the framerate to 60 FPS
